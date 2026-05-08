@@ -48,6 +48,32 @@ npm run build      # production build
 
 Inspect in DevTools → Application → Local Storage.
 
+## Deploying to GitHub Pages
+
+The repo ships a workflow at `.github/workflows/deploy.yml` that builds and
+publishes `dist/` to GitHub Pages on every push to `main` or
+`claude/tribal-wars-coordinator-NC25L` (and on manual dispatch).
+
+To enable it once on GitHub:
+
+1. **Settings → Pages → Build and deployment → Source: "GitHub Actions"**.
+2. **Settings → Actions → General → Workflow permissions: "Read and write
+   permissions"** (the workflow needs `pages: write` and `id-token: write`,
+   already declared in the workflow).
+3. Push (or hit *Run workflow* from the Actions tab) — the deploy job's
+   summary will show the live URL, normally
+   `https://birsuionut.github.io/tw-defender/`.
+
+Implementation notes baked into the build:
+
+- `vite.config.ts` sets `base: '/tw-defender/'` (override with the `VITE_BASE`
+  env var if you point a custom domain at the repo).
+- `src/router.tsx` reads `import.meta.env.BASE_URL` so client-side routes work
+  under the sub-path.
+- A `postbuild` step copies `dist/index.html` to `dist/404.html` — that's the
+  standard GitHub Pages SPA fallback so a refresh on `/admin/duplicates`
+  re-loads the app instead of 404'ing.
+
 ## Roadmap (v2)
 
 Replace `src/data/localStorageRepo.ts` with a Firestore-backed implementation
